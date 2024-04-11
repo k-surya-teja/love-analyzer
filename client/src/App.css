@@ -1,0 +1,101 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@200..800&display=swap');
+
+
+/* .dancing-script-<uniquifier> {
+    font-family: "Dancing Script", cursive;
+    font-optical-sizing: auto;
+    font-weight: <weight>;
+    font-style: normal;
+  } */
+
+* {
+    user-select: none;
+}
+
+.App {
+    background: url('./images/bg.avif');
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.footer {
+    font-size: 25px;
+    font-family: "Dancing Script", cursive;
+    font-weight: 600;
+    color: #ff3654;
+}
+
+.main {
+    min-height: 78vh;
+}
+
+.post-btn:hover{
+    background-color: #c53e53;
+    color: white;
+    border-color: #f13f5a;
+}
+
+.post-btn{
+    background-color: #f13f5a;
+    color: white;
+    border-color: #f13f5a;
+}
+
+.Navbar {
+    font-family: 'Dancing Script', cursive;
+    font-weight: 700;
+    font-size: 35px;
+    font-style: normal;
+    color: rgb(218, 77, 100);
+    min-height: 12vh;
+    display: flex;
+    background-color: transparent;
+}
+
+.hero-text {
+    color: rgb(218, 77, 100);
+}
+
+.label {
+    color: rgb(218, 77, 100);
+    font-family: "Dosis", sans-serif;
+    font-weight: 700;
+    font-size: large;
+}
+
+.text {
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-size: large;
+}
+
+.name {
+    font-family: "Dosis", sans-serif;
+    color: rgb(219, 61, 88);
+    font-weight: 600;
+    font-size: larger;
+}
+
+
+#name1,
+#name2 {
+    border-color: #d8afb5;
+}
+
+.link {
+    text-decoration: none;
+    color: rgb(218, 77, 100);
+    font-family: 'Dancing Script', cursive;
+}
+
+.hero {
+    text-align: center;
+    margin: 10px 10%;
+    font-family: "Dosis", sans-serif;
+    font-optical-sizing: auto;
+    font-weight: 800;
+    color: rgb(128, 55, 128);
+    font-size: large;
+}
