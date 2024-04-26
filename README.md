@@ -21,26 +21,26 @@ Live Demo : <a href="https://loveanalyzer.netlify.app/">https://loveanalyzer.net
      git clone https://github.com/k-surya-teja/love-analyzer.git
    
 2. Navigate to the `client` directory and install dependencies:
-     cd client
-     npm install
+     `cd client`
+     `npm install`
 
 3. Navigate to the `server` directory and install dependencies:
-     cd client
-     npm install
+     `cd client`
+     `npm install`
 
 ## Usage
 
 ### Frontend (Client)
 To start the frontend server, navigate to the client directory and run:
 
-   npm start
+   `npm start`
    
 This will start the React development server and open Love Analyzer in your default web browser.
 
 ### Backend (Server)
 To start the backend server, navigate to the server directory and run:
 
-  nodemon app.js
+  `nodemon app.js`
 
 This will start the Node.js server.
 
