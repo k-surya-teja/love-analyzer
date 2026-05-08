@@ -1,67 +1,151 @@
-import React, { useState, useEffect } from 'react';
-import { Box } from '@mui/material';
-import Model from './Model';
+import React, { useEffect, useState } from 'react';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import Result from './Result';
 import Error from './Error';
+import DailyVibe from './DailyVibe';
+import { computeRelation, compatibilityScore, RELATIONS, RELATION_KEYS } from './utils/relationship';
+
+const NAME_PATTERN = /^[a-zA-Z][a-zA-Z\s'-]{0,39}$/;
 
 export default function Home() {
-
-    const [name1, setName1] = useState("")
-    const [name2, setName2] = useState("")
-
+    const [name1, setName1] = useState('');
+    const [name2, setName2] = useState('');
+    const [error, setError] = useState('');
+    const [result, setResult] = useState(null);
     const [isOffline, setIsOffline] = useState(false);
 
     useEffect(() => {
-        const updateOnlineStatus = () => {
-            setIsOffline(!navigator.onLine);
-        };
-
-        window.addEventListener('online', updateOnlineStatus);
-        window.addEventListener('offline', updateOnlineStatus);
-
+        const update = () => setIsOffline(!navigator.onLine);
+        update();
+        window.addEventListener('online', update);
+        window.addEventListener('offline', update);
         return () => {
-            window.removeEventListener('online', updateOnlineStatus);
-            window.removeEventListener('offline', updateOnlineStatus);
+            window.removeEventListener('online', update);
+            window.removeEventListener('offline', update);
         };
     }, []);
 
-    const handleReset = (e) => {
-        e.preventDefault();
-        setName1("");
-        setName2("");
-        document.getElementById('name1').value = "";
-        document.getElementById('name2').value = "";
+    const validate = () => {
+        const a = name1.trim();
+        const b = name2.trim();
+        if (!a || !b) return 'Please enter both names.';
+        if (!NAME_PATTERN.test(a) || !NAME_PATTERN.test(b)) {
+            return 'Use letters only (1-40 chars).';
+        }
+        if (a.toLowerCase() === b.toLowerCase()) {
+            return 'Names should be different.';
+        }
+        return '';
+    };
 
-    }
+    const handleAnalyze = (e) => {
+        e.preventDefault();
+        const message = validate();
+        if (message) {
+            setError(message);
+            return;
+        }
+        setError('');
+        const relation = computeRelation(name1, name2);
+        const score = compatibilityScore(name1, name2, relation);
+        setResult({ name1: name1.trim(), name2: name2.trim(), relation, score, meta: RELATIONS[relation] });
+    };
+
+    const handleReset = () => {
+        setName1('');
+        setName2('');
+        setError('');
+    };
+
+    if (isOffline) return <Error />;
 
     return (
-        <div className='container main' style={{ textAlign: 'center' }}>
-            {!isOffline ? (
-                <div>
-                    <p className='hero'>
-                        Introducing our <span style={{
-                            color: 'rgb(218, 77, 100)', fontSize: '20px'
-                        }}>Love Analyzer</span> , <br />A lighthearted way to explore relationships ! Just enter two names and discover whether it is <br /> <span className='hero-text'>friendship</span> / <span className='hero-text'>love</span> / <span className='hero-text'>attraction</span> / <span className='hero-text'>marriage</span> / <span className='hero-text'>rivalry</span> / <span className='hero-text'>siblinghood</span>. <br /> Remember, it's all for laughs and not to be taken seriously ! Enjoy the playful insights !
-                    </p>
-                    <br />
-                    <Box className='container' sx={{ justifyContent: 'center' }}>
-                        <div style={{ justifyContent: 'center', display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-                            <div>
-                                <label htmlFor="name1" className='label'>Enter your Name : </label><br />
-                                <input className='form-control form-control-lg' id='name1' type="text" onChange={(e) => { setName1(e.target.value) }} required='true' /><br />
-                                <label htmlFor="name2" className='label'>Enter your Crush Name : </label><br />
-                                <input className='form-control form-control-lg' id='name2' type="text" onChange={(e) => { setName2(e.target.value) }} required='true' /><br />
-                            </div>
-                            {name1 !== "" && name2 !== "" && name1.split("").sort().join("")!== name2.split("").sort().join("") &&
-                                <div style={{ justifyContent: 'center', gap: '10px', display: 'flex' }}>
-                                    <Model name1={name1} name2={name2} />
-                                    <button className='btn btn-lg btn-secondary' onClick={handleReset}>Reset</button>
-                                </div>
-                            }
-                        </div>
-                    </Box>
+        <main className="page">
+            <section className="hero hero--compact">
+                <span className="hero__eyebrow">FLAMES • Reimagined</span>
+                <h1 className="hero__title hero__title--sm">
+                    What do your <span className="accent">names</span> say?
+                </h1>
+                <p className="hero__subtitle hero__subtitle--sm">
+                    Enter two names — get a relationship verdict and a compatibility score in seconds.
+                </p>
+            </section>
+
+            <form className="analyzer glass analyzer--lifted" onSubmit={handleAnalyze} noValidate>
+                <div className="analyzer__row">
+                    <div className="field">
+                        <label className="field__label" htmlFor="name1">Your name</label>
+                        <input
+                            id="name1"
+                            className="field__input"
+                            type="text"
+                            placeholder="e.g. Aria"
+                            value={name1}
+                            onChange={(e) => setName1(e.target.value)}
+                            maxLength={40}
+                            autoComplete="off"
+                            autoFocus
+                            required
+                        />
+                    </div>
+                    <div className="field">
+                        <label className="field__label" htmlFor="name2">Their name</label>
+                        <input
+                            id="name2"
+                            className="field__input"
+                            type="text"
+                            placeholder="e.g. Kai"
+                            value={name2}
+                            onChange={(e) => setName2(e.target.value)}
+                            maxLength={40}
+                            autoComplete="off"
+                            required
+                        />
+                    </div>
                 </div>
-            ) : <Error />
-            }
-        </div>
-    )
+
+                {error && <p className="analyzer__error" role="alert">{error}</p>}
+
+                <div className="analyzer__actions">
+                    <button type="submit" className="btn btn--primary btn--lg" disabled={!name1 || !name2}>
+                        <FavoriteBorderIcon fontSize="small" /> Analyze
+                    </button>
+                    <button type="button" className="btn btn--ghost" onClick={handleReset}>
+                        Reset
+                    </button>
+                </div>
+            </form>
+
+            <section className="below-fold">
+                <div className="hero__pills">
+                    {RELATION_KEYS.map((key) => {
+                        const { Icon, label } = RELATIONS[key];
+                        return (
+                            <span className="hero__pill" key={key}>
+                                <Icon fontSize="inherit" /> {label}
+                            </span>
+                        );
+                    })}
+                </div>
+
+                <DailyVibe />
+
+                <p className="hero__footnote">
+                    A playful relationship oracle — for laughs, not life advice. Save your results and share them
+                    with a unique link.
+                </p>
+            </section>
+
+            {result && (
+                <Result
+                    name1={result.name1}
+                    name2={result.name2}
+                    relation={result.relation}
+                    score={result.score}
+                    meta={result.meta}
+                    onClose={() => setResult(null)}
+                />
+            )}
+        </main>
+    );
 }
